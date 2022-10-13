@@ -40,10 +40,35 @@ function chooseItemByNameAndSize(products, name, size) {
 	});
 	return result ? result : null;
 }
-function addProductToCart(product, cart = {}) {}
-function calculateTotal(cart) {}
 
-function printReceipt(cart) {}
+function addProductToCart(product, cart = {}) {
+	let { name, priceInCents } = product;
+	cart[name]
+		? cart[name].quantity++
+		: (cart[name] = { priceInCents, quantity: 1 });
+	return cart;
+}
+
+function calculateTotal(cart) {
+	let total = 0;
+	Object.keys(cart).forEach((key) => {
+		total += cart[key].priceInCents * cart[key].quantity;
+	});
+	return total;
+}
+
+function printReceipt(cart) {
+	const total = calculateTotal(cart);
+	if (!total) return null;
+
+	let result = "";
+	for (let currentItem in cart) {
+		const { quantity, priceInCents } = cart[currentItem];
+		const amount = printablePrice(quantity * priceInCents);
+		result += `${quantity}x${currentItem} - ${amount}\n`;
+	}
+	return result + `Total: ${printablePrice(total)}`;
+}
 
 module.exports = {
 	chooseItemByNameAndSize,
